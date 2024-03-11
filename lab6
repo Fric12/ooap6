@@ -1,0 +1,110 @@
+using System;
+using System.Collections.Generic;
+
+// Component
+interface ISoldier
+{
+    void ExecuteOrder(string order);
+}
+
+class SimpleSoldier : ISoldier
+{
+    private string name;
+
+    public SimpleSoldier(string name)
+    {
+        this.name = name;
+    }
+
+    public void ExecuteOrder(string order)
+    {
+        Console.WriteLine($"{name}: {order}");
+    }
+}
+
+// Composite
+class Squad : ISoldier
+{
+    private List<ISoldier> soldiers = new List<ISoldier>();
+
+    public void AddSoldier(ISoldier soldier)
+    {
+        soldiers.Add(soldier);
+    }
+
+    public void RemoveSoldier(ISoldier soldier)
+    {
+        soldiers.Remove(soldier);
+    }
+
+    public void ExecuteOrder(string order)
+    {
+        Console.WriteLine($"Загін виконує наказ: {order}");
+        foreach (var soldier in soldiers)
+        {
+            soldier.ExecuteOrder(order);
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var squad = new Squad();
+        var soldiers = new List<ISoldier>();
+
+  
+        soldiers.Add(new SimpleSoldier("Солдат 1"));
+        soldiers.Add(new SimpleSoldier("Солдат 2"));
+        soldiers.Add(new SimpleSoldier("Солдат 3"));
+
+        foreach (var soldier in soldiers)
+        {
+            squad.AddSoldier(soldier);
+        }
+
+        while (true)
+        {
+            Console.WriteLine("Оберіть дію:");
+            Console.WriteLine("1. Викликати команду для взводу");
+            Console.WriteLine("2. Викликати команду для окремого солдата");
+            Console.WriteLine("3. Вийти");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    Console.WriteLine("Введіть команду для взводу:");
+                    string squadCommand = Console.ReadLine();
+                    squad.ExecuteOrder(squadCommand);
+                    break;
+
+                case "2":
+                    Console.WriteLine("Оберіть номер солдата (1, 2, 3):");
+                    int soldierIndex = int.Parse(Console.ReadLine()) - 1;
+
+                    if (soldierIndex >= 0 && soldierIndex < soldiers.Count)
+                    {
+                        Console.WriteLine("Введіть команду для солдата:");
+                        string soldierCommand = Console.ReadLine();
+                        soldiers[soldierIndex].ExecuteOrder(soldierCommand);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Невірний номер солдата.");
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("До побачення!");
+                    return;
+
+                default:
+                    Console.WriteLine("Невірний вибір. Спробуйте ще раз.");
+                    break;
+            }
+        }
+    }
+}
